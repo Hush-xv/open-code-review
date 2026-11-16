@@ -36,11 +36,19 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     // ── RunningView ──
     'view.running.reviewLog': 'Review log',
     'view.running.cancel': 'Cancel',
+    'view.running.elapsed': 'Elapsed',
+    'view.running.stage.starting': 'Starting review',
+    'view.running.stage.scope': 'Collecting changed files',
+    'view.running.stage.reviewing': 'Analyzing code',
+    'view.running.stage.finalizing': 'Preparing results',
 
     // ── DoneView ──
     'view.done.comments': 'comments',
     'view.done.files': 'files',
     'view.done.processLog': 'Process log',
+    'view.done.filterAll': 'All',
+    'view.done.filterSeverity': 'Severity',
+    'view.done.noSeverityIssues': 'No findings at this severity.',
 
     // ── EmptyView ──
     'view.empty.noIssues': 'No issues found · Passed',
@@ -61,6 +69,9 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     'view.config.close': 'Close',
     'view.config.step1': 'Environment Setup',
     'view.config.step2': 'Provider Config',
+    'view.config.reviewPromptTitle': 'Global review prompt',
+    'view.config.reviewPromptHint': 'Applied to every review. Per-review instructions are appended after it.',
+    'view.config.reviewPromptPlaceholder': 'Set shared rules, focus areas, or project-specific review guidance…',
     'view.config.checking': 'ocr checking…',
     'view.config.notInstalled': 'ocr not installed',
     'view.config.official': 'Official Provider',
@@ -136,7 +147,18 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
 
     // ── CommentCard ──
     'cmp.comment.view': 'View',
+    'cmp.comment.expand': 'Show full comment',
+    'cmp.comment.collapse': 'Show less',
+    'cmp.comment.apply': 'Apply suggestion',
+    'cmp.comment.falsePositive': 'False positive',
     'cmp.comment.discard': 'Discard',
+    'cmp.comment.status.applied': 'Applied',
+    'cmp.comment.status.discarded': 'Ignored',
+    'cmp.comment.status.falsePositive': 'False positive',
+    'cmp.comment.severity.critical': 'Critical',
+    'cmp.comment.severity.high': 'High',
+    'cmp.comment.severity.medium': 'Medium',
+    'cmp.comment.severity.low': 'Low',
 
     // ── PasswordInput ──
     'cmp.password.hideSecret': 'Hide secret',
@@ -194,10 +216,18 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
 
     'view.running.reviewLog': '审查日志',
     'view.running.cancel': '取消',
+    'view.running.elapsed': '已耗时',
+    'view.running.stage.starting': '正在启动审查',
+    'view.running.stage.scope': '正在整理变更范围',
+    'view.running.stage.reviewing': '正在分析代码',
+    'view.running.stage.finalizing': '正在整理审查结果',
 
     'view.done.comments': '条评论',
     'view.done.files': '个文件',
     'view.done.processLog': '过程日志',
+    'view.done.filterAll': '全部',
+    'view.done.filterSeverity': '等级',
+    'view.done.noSeverityIssues': '该等级没有问题。',
 
     'view.empty.noIssues': '未发现问题 · 已通过',
     'view.empty.processLog': '过程日志',
@@ -214,6 +244,9 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     'view.config.close': '关闭',
     'view.config.step1': '环境检测',
     'view.config.step2': 'Provider 配置',
+    'view.config.reviewPromptTitle': '全局审查提示词',
+    'view.config.reviewPromptHint': '每次审查都会应用。单次审查提示词会追加在全局提示词之后。',
+    'view.config.reviewPromptPlaceholder': '填写通用规则、关注重点或项目审查要求…',
     'view.config.checking': 'ocr 检测中…',
     'view.config.notInstalled': 'ocr 未安装',
     'view.config.official': '官方 Provider',
@@ -284,7 +317,18 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     'cmp.log.waiting': '等待输出',
 
     'cmp.comment.view': '查看',
+    'cmp.comment.expand': '展开全文',
+    'cmp.comment.collapse': '收起',
+    'cmp.comment.apply': '应用建议',
+    'cmp.comment.falsePositive': '标记误报',
     'cmp.comment.discard': '忽略',
+    'cmp.comment.status.applied': '已应用',
+    'cmp.comment.status.discarded': '已忽略',
+    'cmp.comment.status.falsePositive': '已标记误报',
+    'cmp.comment.severity.critical': '严重',
+    'cmp.comment.severity.high': '高',
+    'cmp.comment.severity.medium': '中',
+    'cmp.comment.severity.low': '低',
 
     'cmp.password.hideSecret': '隐藏密钥',
     'cmp.password.showSecret': '显示密钥',
@@ -341,11 +385,19 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     // ── RunningView ──
     'view.running.reviewLog': 'レビューログ',
     'view.running.cancel': 'キャンセル',
+    'view.running.elapsed': '経過時間',
+    'view.running.stage.starting': 'レビューを開始中',
+    'view.running.stage.scope': '変更範囲を確認中',
+    'view.running.stage.reviewing': 'コードを分析中',
+    'view.running.stage.finalizing': 'レビュー結果を整理中',
 
     // ── DoneView ──
     'view.done.comments': '件のコメント',
     'view.done.files': 'ファイル',
     'view.done.processLog': '処理ログ',
+    'view.done.filterAll': 'すべて',
+    'view.done.filterSeverity': '重大度',
+    'view.done.noSeverityIssues': 'この重大度の指摘はありません。',
 
     // ── EmptyView ──
     'view.empty.noIssues': '問題は見つかりませんでした · 合格',
@@ -366,6 +418,9 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     'view.config.close': '閉じる',
     'view.config.step1': '環境のセットアップ',
     'view.config.step2': 'プロバイダー設定',
+    'view.config.reviewPromptTitle': '全体レビュー指示',
+    'view.config.reviewPromptHint': 'すべてのレビューに適用されます。個別の指示はこの後に追加されます。',
+    'view.config.reviewPromptPlaceholder': '共通ルール、重点項目、プロジェクト固有のレビュー要件を入力…',
     'view.config.checking': 'ocr を確認中…',
     'view.config.notInstalled': 'ocr がインストールされていません',
     'view.config.official': '公式プロバイダー',
@@ -441,7 +496,18 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
 
     // ── CommentCard ──
     'cmp.comment.view': '表示',
+    'cmp.comment.expand': '全文を表示',
+    'cmp.comment.collapse': '折りたたむ',
+    'cmp.comment.apply': '提案を適用',
+    'cmp.comment.falsePositive': '誤検知として報告',
     'cmp.comment.discard': '無視',
+    'cmp.comment.status.applied': '適用済み',
+    'cmp.comment.status.discarded': '無視済み',
+    'cmp.comment.status.falsePositive': '誤検知',
+    'cmp.comment.severity.critical': '重大',
+    'cmp.comment.severity.high': '高',
+    'cmp.comment.severity.medium': '中',
+    'cmp.comment.severity.low': '低',
 
     // ── PasswordInput ──
     'cmp.password.hideSecret': 'シークレットを隠す',
@@ -501,11 +567,19 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     // ── RunningView ──
     'view.running.reviewLog': '검토 로그',
     'view.running.cancel': '취소',
+    'view.running.elapsed': '경과 시간',
+    'view.running.stage.starting': '검토 시작 중',
+    'view.running.stage.scope': '변경 범위 확인 중',
+    'view.running.stage.reviewing': '코드 분석 중',
+    'view.running.stage.finalizing': '검토 결과 정리 중',
 
     // ── DoneView ──
     'view.done.comments': '개 댓글',
     'view.done.files': '개 파일',
     'view.done.processLog': '처리 로그',
+    'view.done.filterAll': '전체',
+    'view.done.filterSeverity': '심각도',
+    'view.done.noSeverityIssues': '이 심각도에 해당하는 문제가 없습니다.',
 
     // ── EmptyView ──
     'view.empty.noIssues': '문제를 찾지 못했습니다 · 통과',
@@ -526,6 +600,9 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     'view.config.close': '닫기',
     'view.config.step1': '환경 설정',
     'view.config.step2': '프로바이더 설정',
+    'view.config.reviewPromptTitle': '전역 검토 프롬프트',
+    'view.config.reviewPromptHint': '모든 검토에 적용됩니다. 개별 검토 지침은 뒤에 추가됩니다.',
+    'view.config.reviewPromptPlaceholder': '공통 규칙, 중점 확인 항목 또는 프로젝트별 검토 요구 사항을 입력하세요…',
     'view.config.checking': 'ocr 확인 중…',
     'view.config.notInstalled': 'ocr가 설치되지 않았습니다',
     'view.config.official': '공식 프로바이더',
@@ -601,7 +678,18 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
 
     // ── CommentCard ──
     'cmp.comment.view': '보기',
+    'cmp.comment.expand': '전체 내용 보기',
+    'cmp.comment.collapse': '접기',
+    'cmp.comment.apply': '제안 적용',
+    'cmp.comment.falsePositive': '오탐으로 표시',
     'cmp.comment.discard': '무시',
+    'cmp.comment.status.applied': '적용됨',
+    'cmp.comment.status.discarded': '무시됨',
+    'cmp.comment.status.falsePositive': '오탐',
+    'cmp.comment.severity.critical': '치명적',
+    'cmp.comment.severity.high': '높음',
+    'cmp.comment.severity.medium': '보통',
+    'cmp.comment.severity.low': '낮음',
 
     // ── PasswordInput ──
     'cmp.password.hideSecret': '시크릿 숨기기',
@@ -661,11 +749,19 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     // ── RunningView ──
     'view.running.reviewLog': 'Журнал проверки',
     'view.running.cancel': 'Отмена',
+    'view.running.elapsed': 'Прошло',
+    'view.running.stage.starting': 'Запуск проверки',
+    'view.running.stage.scope': 'Определение изменений',
+    'view.running.stage.reviewing': 'Анализ кода',
+    'view.running.stage.finalizing': 'Подготовка результатов',
 
     // ── DoneView ──
     'view.done.comments': 'комм.',
     'view.done.files': 'файл(ов)',
     'view.done.processLog': 'Журнал выполнения',
+    'view.done.filterAll': 'Все',
+    'view.done.filterSeverity': 'Важность',
+    'view.done.noSeverityIssues': 'Для этого уровня замечаний нет.',
 
     // ── EmptyView ──
     'view.empty.noIssues': 'Проблем не найдено · Проверка пройдена',
@@ -686,6 +782,9 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
     'view.config.close': 'Закрыть',
     'view.config.step1': 'Подготовка окружения',
     'view.config.step2': 'Настройка провайдера',
+    'view.config.reviewPromptTitle': 'Глобальный промпт проверки',
+    'view.config.reviewPromptHint': 'Применяется ко всем проверкам. Инструкции для отдельной проверки добавляются после него.',
+    'view.config.reviewPromptPlaceholder': 'Укажите общие правила, приоритеты или требования проекта к проверке…',
     'view.config.checking': 'Проверка ocr…',
     'view.config.notInstalled': 'ocr не установлен',
     'view.config.official': 'Официальный провайдер',
@@ -761,7 +860,18 @@ const messages: Record<SupportedLocale, Record<string, string>> = {
 
     // ── CommentCard ──
     'cmp.comment.view': 'Открыть',
+    'cmp.comment.expand': 'Показать весь комментарий',
+    'cmp.comment.collapse': 'Свернуть',
+    'cmp.comment.apply': 'Применить предложение',
+    'cmp.comment.falsePositive': 'Ложное срабатывание',
     'cmp.comment.discard': 'Отклонить',
+    'cmp.comment.status.applied': 'Применено',
+    'cmp.comment.status.discarded': 'Отклонено',
+    'cmp.comment.status.falsePositive': 'Ложное срабатывание',
+    'cmp.comment.severity.critical': 'Критическая',
+    'cmp.comment.severity.high': 'Высокая',
+    'cmp.comment.severity.medium': 'Средняя',
+    'cmp.comment.severity.low': 'Низкая',
 
     // ── PasswordInput ──
     'cmp.password.hideSecret': 'Скрыть секрет',

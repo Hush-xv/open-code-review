@@ -15,13 +15,13 @@ type Tool struct {
 }
 
 var (
-	Unknown      = Tool{name: "unknown"}
-	TaskDone     = Tool{name: "task_done"}
-	CodeComment  = Tool{name: "code_comment"}
-	FileRead     = Tool{name: "file_read"}
-	FileFind     = Tool{name: "file_find"}
-	FileReadDiff = Tool{name: "file_read_diff"}
-	CodeSearch   = Tool{name: "code_search"}
+	Unknown          = Tool{name: "unknown"}
+	TaskDone         = Tool{name: "task_done"}
+	CodeComment      = Tool{name: "code_comment"}
+	FileRead         = Tool{name: "file_read"}
+	FileFind         = Tool{name: "file_find"}
+	FileReadDiff     = Tool{name: "file_read_diff"}
+	CodeSearch       = Tool{name: "code_search"}
 )
 
 func OfName(name string) Tool {

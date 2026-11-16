@@ -44,6 +44,7 @@ export function parseConfig(raw: string): OcrConfig | null {
       authHeader: llm.auth_header || '',
     },
     language: j.language || 'Chinese',
+    reviewPrompt: typeof j.review_prompt === 'string' ? j.review_prompt : '',
   };
 }
 

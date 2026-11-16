@@ -37,15 +37,24 @@ export class ConfigService {
     }
   }
 
+  private readRawForUpdate(): RawConfig {
+    const p = this.configPath();
+    if (!existsSync(p)) return {};
+    const parsed: unknown = JSON.parse(readFileSync(p, 'utf8'));
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('Cannot save global review prompt: OCR config must be a JSON object.');
+    }
+    return parsed as RawConfig;
+  }
+
   private writeRaw(raw: RawConfig): OcrConfig | null {
     const p = this.configPath();
-    const hasContent = Boolean(
-      raw.provider
-      || raw.model
-      || (raw.providers && Object.keys(raw.providers).length > 0)
-      || (raw.custom_providers && Object.keys(raw.custom_providers).length > 0)
-      || (raw.llm && Object.keys(raw.llm).length > 0),
-    );
+    const hasContent = Object.values(raw).some((value) => {
+      if (typeof value === 'string') return value.length > 0;
+      if (typeof value === 'number' || typeof value === 'boolean') return true;
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== null && typeof value === 'object' && Object.keys(value).length > 0;
+    });
     if (!hasContent) {
       if (existsSync(p)) unlinkSync(p);
       return null;
@@ -86,14 +95,25 @@ export class ConfigService {
   }
 
   async set(key: string, value: string): Promise<OcrConfig | null> {
+    if (key === 'review_prompt') return this.setReviewPrompt(value);
     await this.cli.runRaw(toConfigSetArgs(key, value), process.cwd(), () => {});
     return this.read();
   }
 
   async setMany(entries: { key: string; value: string }[]): Promise<OcrConfig | null> {
+    if (entries.length === 1 && entries[0].key === 'review_prompt') {
+      return this.setReviewPrompt(entries[0].value);
+    }
     for (const entry of entries) {
       await this.cli.runRaw(toConfigSetArgs(entry.key, entry.value), process.cwd(), () => {});
     }
     return this.read();
+  }
+
+  private setReviewPrompt(value: string): OcrConfig | null {
+    const raw = this.readRawForUpdate();
+    raw.review_prompt = value;
+    console.debug('[ConfigService] saving global review prompt', { characters: value.length });
+    return this.writeRaw(raw);
   }
 }

@@ -80,11 +80,11 @@ export function ConfigView({
   const t = useT();
   const stepper = (
     <div class="config-stepper">
-      <div class={`config-step-pill${step === 1 ? ' done' : ''}`}>
+      <div class={`config-step-pill${step === 1 ? ' active' : ' done'}`}>
         <span class="config-step-num">1</span>
         <span>{t('view.config.step1')}</span>
       </div>
-      <div class={`config-step-pill${step === 2 ? ' done' : ''}`}>
+      <div class={`config-step-pill${step === 2 ? ' active' : ''}`}>
         <span class="config-step-num">2</span>
         <span>{t('view.config.step2')}</span>
       </div>
@@ -247,6 +247,10 @@ function ProviderStep({
   onClearConnTest?: () => void;
 }) {
   const t = useT();
+  const savedPrompt = config?.reviewPrompt ?? '';
+  const [reviewPrompt, setReviewPrompt] = useState(savedPrompt);
+  useEffect(() => setReviewPrompt(savedPrompt), [savedPrompt]);
+  const promptChanged = reviewPrompt !== savedPrompt;
   return (
     <div class="wizard-body provider-step">
       <div class="segmented-control">
@@ -266,6 +270,30 @@ function ProviderStep({
       </div>
 
       <ActiveProviderBanner config={config} />
+
+      <section class="global-review-prompt">
+        <label class="global-review-prompt-label" for="ocr-global-review-prompt">
+          {t('view.config.reviewPromptTitle')}
+        </label>
+        <div id="ocr-global-review-prompt-hint" class="global-review-prompt-hint">
+          {t('view.config.reviewPromptHint')}
+        </div>
+        <textarea
+          id="ocr-global-review-prompt"
+          class="global-review-prompt-input"
+          rows={4}
+          value={reviewPrompt}
+          placeholder={t('view.config.reviewPromptPlaceholder')}
+          aria-describedby="ocr-global-review-prompt-hint"
+          onInput={(event) => setReviewPrompt((event.target as HTMLTextAreaElement).value)}
+        />
+        <div class="form-actions global-review-prompt-actions">
+          <button type="button" class="btn-save" disabled={!promptChanged} onClick={() => {
+            console.debug('[ConfigView] saving global review prompt', { characters: reviewPrompt.length });
+            onSave([{ key: 'review_prompt', value: reviewPrompt }]);
+          }}>{t('view.config.save')}</button>
+        </div>
+      </section>
 
       {tab === 'official' && (
         <OfficialForm wide={wide} config={config} connTest={connTest} onBack={onBack} onTest={onTest} onSave={onSave} />

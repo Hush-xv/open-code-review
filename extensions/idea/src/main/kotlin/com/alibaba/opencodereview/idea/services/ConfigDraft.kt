@@ -183,6 +183,8 @@ private fun RawConfig.setConfigValue(key: String, value: String) {
             }
         }
 
+        "review_prompt" -> this[key] = JsonPrimitive(value)
+
         "llm.url" -> setLlmField("url", JsonPrimitive(value))
         "llm.auth_token" -> setLlmField("auth_token", JsonPrimitive(value))
         "llm.auth_header" -> setLlmField("auth_header", JsonPrimitive(value))

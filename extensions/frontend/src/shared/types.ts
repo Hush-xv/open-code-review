@@ -11,10 +11,12 @@ export type ReviewState =
   | 'idle' | 'running' | 'done' | 'empty' | 'cancelled' | 'failed';
 
 export type CommentStatus = 'pending' | 'applied' | 'discarded' | 'falsePositive';
+export type ReviewSeverity = 'critical' | 'high' | 'medium' | 'low';
 
 export interface ReviewComment {
   path: string;
   content: string;
+  severity?: ReviewSeverity;
   suggestionCode?: string;
   existingCode?: string;
   startLine: number;
@@ -67,6 +69,7 @@ export interface OcrConfig {
     authHeader?: string;
   };
   language: string;
+  reviewPrompt?: string;
 }
 
 export interface CommitInfo {

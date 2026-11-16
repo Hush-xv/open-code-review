@@ -29,6 +29,7 @@ import kotlinx.serialization.json.JsonPrimitive
 private data class CliCommentDto(
     val path: String,
     val content: String,
+    val severity: String? = null,
     @SerialName("suggestion_code") val suggestionCode: String? = null,
     @SerialName("existing_code") val existingCode: String? = null,
     @SerialName("start_line") val startLine: Int = 0,
@@ -74,6 +75,7 @@ fun buildReviewArgs(opts: CliRunOptions): List<String> = buildList {
 private fun CliCommentDto.toComment(): ReviewComment = ReviewComment(
     path = path,
     content = content,
+    severity = severity?.lowercase()?.takeIf { it in setOf("critical", "high", "medium", "low") },
     // Normalize blank strings to missing: passed through as-is, an empty/blank string would make callers
     // treat it as "a suggestion/existing code is present".
     suggestionCode = suggestionCode?.takeIf(String::isNotBlank),

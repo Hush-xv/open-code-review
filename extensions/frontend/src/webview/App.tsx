@@ -26,8 +26,16 @@ export function App() {
 
   const configured = isConfigReady(state.config);
   const start = (options: CliRunOptions) => {
+    const globalPrompt = state.config?.reviewPrompt?.trim() ?? '';
+    const reviewPrompt = options.customPrompt?.trim() ?? '';
+    const customPrompt = [globalPrompt, reviewPrompt].filter(Boolean).join('\n\n');
+    console.debug('[App] starting review', {
+      mode: options.mode,
+      hasGlobalPrompt: Boolean(globalPrompt),
+      hasReviewPrompt: Boolean(reviewPrompt),
+    });
     dispatch({ type: 'startReview', mode: options.mode });
-    bridge.post({ type: 'startReview', options });
+    bridge.post({ type: 'startReview', options: { ...options, customPrompt } });
   };
   const onModeChange = (mode: ReviewMode) => {
     dispatch({ type: 'filesLoading' });
@@ -60,6 +68,7 @@ export function App() {
               {state.view === 'done' && state.session.result && (
                 <DoneView result={state.session.result} commentStatus={state.commentStatus}
                   commentJumpable={state.commentJumpable} logs={state.logs}
+                  canApply={state.reviewMode === ReviewMode.Workspace}
                   onOpen={(i) => bridge.post({ type: 'jumpToComment', index: i })}
                   onAction={(i, action) => bridge.post({ type: 'commentAction', index: i, action })} />
               )}

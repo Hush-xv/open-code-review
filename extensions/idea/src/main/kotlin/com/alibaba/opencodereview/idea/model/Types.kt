@@ -76,6 +76,7 @@ enum class FileStatus {
 data class ReviewComment(
     val path: String = "",
     val content: String = "",
+    val severity: String? = null,
     val suggestionCode: String? = null,
     val existingCode: String? = null,
     val startLine: Int = 0,
@@ -138,6 +139,7 @@ data class OcrConfig(
     val customProviders: Map<String, ProviderEntry> = emptyMap(),
     val llm: LlmConfig = LlmConfig(),
     val language: String = "Chinese",
+    val reviewPrompt: String = "",
 )
 
 /** [sha] is the 7-character short hash, matching the frontend's truncation rule. */

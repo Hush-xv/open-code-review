@@ -13,6 +13,7 @@ export type RawConfig = {
   custom_providers?: Record<string, RawProviderEntry>;
   llm?: Record<string, unknown>;
   language?: string;
+  review_prompt?: string;
 };
 
 function parseModelList(value: string): string[] {
@@ -99,6 +100,9 @@ function setConfigValue(cfg: RawConfig, key: string, value: string): void {
         if (!cfg.custom_providers) cfg.custom_providers = {};
         if (!cfg.custom_providers[value]) cfg.custom_providers[value] = {};
       }
+      break;
+    case 'review_prompt':
+      cfg.review_prompt = value;
       break;
     case 'model':
       if (cfg.provider) {

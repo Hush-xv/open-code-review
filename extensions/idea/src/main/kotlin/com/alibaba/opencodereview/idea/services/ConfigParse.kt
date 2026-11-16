@@ -69,6 +69,7 @@ fun parseConfig(raw: String): OcrConfig? {
             authHeader = llm.strAt("auth_header"),
         ),
         language = j.strAt("language").ifEmpty { "Chinese" },
+        reviewPrompt = j.strAt("review_prompt"),
     )
 }
 

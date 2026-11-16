@@ -61,7 +61,6 @@ export class CommentProvider {
     await this.git.prepareReviewFileStatus(ctx);
     const deps = this.buildAnchorDeps(root, ctx);
 
-    let firstShown = -1;
     for (let i = 0; i < this.comments.length; i++) {
       const c = this.comments[i];
       this.status.set(i, 'pending');
@@ -87,13 +86,15 @@ export class CommentProvider {
         this.threads.set(i, thread);
         this.mounts.set(i, anchor);
         this.jumpable.add(i);
-        if (firstShown < 0) firstShown = i;
       } catch {
         this.jumpBlockReasons.set(i, 'mount-failed');
       }
     }
 
-    if (firstShown >= 0) await this.jumpTo(firstShown);
+    console.debug('[CommentProvider] review comments ready without auto-jump', {
+      total: this.comments.length,
+      mounted: this.threads.size,
+    });
     this.emitSync();
   }
 

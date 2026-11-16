@@ -7,20 +7,23 @@ import com.alibaba.opencodereview.idea.model.ConfigEntry
 import com.alibaba.opencodereview.idea.model.HostStrings
 import com.alibaba.opencodereview.idea.model.OcrConfig
 import com.alibaba.opencodereview.idea.model.currentIdeLocale
-import com.intellij.openapi.diagnostic.thisLogger
-import com.intellij.openapi.util.SystemInfo
-import kotlinx.serialization.json.JsonObject
-import kotlin.jvm.Synchronized
-import java.io.IOException
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.PosixFilePermissions
+import kotlin.jvm.Synchronized
+import com.intellij.openapi.diagnostic.thisLogger
+import com.intellij.openapi.util.SystemInfo
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Reads and writes `~/.opencodereview/config.json`. Division of labor:
- * single-key writes go through the CLI (`ocr config set`), which validates and normalizes;
- * only "delete a custom provider" edits the file directly -- the CLI has no matching unset subcommand.
+ * most settings use the CLI (`ocr config set`), which validates and normalizes. The plugin-owned review prompt is
+ * stored directly for compatibility with older CLI versions; custom provider deletion is direct because the CLI
+ * has no matching unset subcommand.
  */
 class ConfigService(
     private val cli: CliService,
@@ -58,11 +61,13 @@ class ConfigService(
      *  @Synchronized serializes writes: it avoids tmp-file-name collisions and interleaving between concurrent
      *  writers (delete provider vs the setMany rollback). */
     @Synchronized
-    private fun writeRaw(raw: RawConfig): OcrConfig? {
+    private fun writeRaw(raw: RawConfig, throwOnFailure: Boolean = false): OcrConfig? {
         val path = configPath()
         if (!raw.hasContent()) {
             if (path.exists() && !path.delete()) {
-                thisLogger().warn("[ocr] Failed to delete empty config file: ${path.absolutePath}")
+                val error = IOException("Failed to delete empty config file: ${path.absolutePath}")
+                thisLogger().warn("[ocr] ${error.message}", error)
+                if (throwOnFailure) throw error
             }
             return null
         }
@@ -101,6 +106,7 @@ class ConfigService(
             trySetPosixPermissions(path, "rw-------")
         }.onFailure {
             thisLogger().warn("[ocr] Failed to write config file: ${path.absolutePath}", it)
+            if (throwOnFailure) throw it
             return read()
         }
         return read()
@@ -108,19 +114,14 @@ class ConfigService(
 
     /** Whether the config still has real content. Empty strings do not count -- a blank string is falsy in this check. */
     private fun RawConfig.hasContent(): Boolean {
-        fun nonEmptyStr(key: String): Boolean {
-            val prim = this[key] as? kotlinx.serialization.json.JsonPrimitive ?: return false
-            return prim.isString && prim.content.isNotEmpty()
+        return values.any { value ->
+            when (value) {
+                is JsonPrimitive -> !value.isString || value.content.isNotEmpty()
+                is JsonObject -> value.isNotEmpty()
+                is JsonArray -> value.isNotEmpty()
+                else -> false
+            }
         }
-
-        fun nonEmptyObj(key: String): Boolean =
-            (this[key] as? JsonObject)?.isNotEmpty() == true
-
-        return nonEmptyStr("provider") ||
-            nonEmptyStr("model") ||
-            nonEmptyObj("providers") ||
-            nonEmptyObj("custom_providers") ||
-            nonEmptyObj("llm")
     }
 
     /**
@@ -182,6 +183,7 @@ class ConfigService(
     /** Writes a single config entry and returns the config after the write. [CliService.runRaw] throws [CliException] when the CLI exits non-zero. */
     @Synchronized
     fun set(key: String, value: String): OcrConfig? {
+        if (key == "review_prompt") return setReviewPrompt(value)
         cli.runRaw(toConfigSetArgs(key, value), cwd, {})
         return read()
     }
@@ -194,6 +196,9 @@ class ConfigService(
      */
     @Synchronized
     fun setMany(entries: List<ConfigEntry>): OcrConfig? {
+        if (entries.size == 1 && entries[0].key == "review_prompt") {
+            return setReviewPrompt(entries[0].value)
+        }
         val snapshot = readRaw()
         val applied = mutableListOf<ConfigEntry>()
         try {
@@ -211,6 +216,19 @@ class ConfigService(
             if (snapshot.hasContent()) writeRaw(snapshot)
             throw e
         }
+    }
+
+    @Synchronized
+    private fun setReviewPrompt(value: String): OcrConfig? {
+        val path = configPath()
+        val raw = if (path.isFile) {
+            OcrJson.parseToJsonElement(path.readText()).jsonObject.toMutableMap()
+        } else {
+            emptyRawConfig()
+        }
+        raw["review_prompt"] = JsonPrimitive(value)
+        thisLogger().debug("[ocr] Saving global review prompt (${value.length} characters)")
+        return writeRaw(raw, throwOnFailure = true)
     }
 
     /** Windows has no POSIX permission view, so it is skipped silently; a failure only leaves permissions looser and must not fail the config write. */

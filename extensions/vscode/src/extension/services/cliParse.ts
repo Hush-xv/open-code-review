@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 alibaba/open-code-review Contributors
 
-import { CliResult, CliRunOptions, LogLine, ReviewComment, ReviewMode } from '@shared/types';
+import { CliResult, CliRunOptions, LogLine, ReviewComment, ReviewMode, ReviewSeverity } from '@shared/types';
+
+const REVIEW_SEVERITIES = new Set<ReviewSeverity>(['critical', 'high', 'medium', 'low']);
 
 export function buildReviewArgs(opts: CliRunOptions): string[] {
   const args: string[] = ['review'];
@@ -25,9 +27,11 @@ export function buildReviewArgs(opts: CliRunOptions): string[] {
 }
 
 function toComment(raw: any): ReviewComment {
+  const severity = typeof raw.severity === 'string' ? raw.severity.toLowerCase() as ReviewSeverity : undefined;
   return {
     path: raw.path,
     content: raw.content,
+    severity: severity && REVIEW_SEVERITIES.has(severity) ? severity : undefined,
     suggestionCode: raw.suggestion_code || undefined,
     existingCode: raw.existing_code || undefined,
     startLine: raw.start_line,
